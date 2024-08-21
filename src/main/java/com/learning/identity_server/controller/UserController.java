@@ -2,6 +2,7 @@ package com.learning.identity_server.controller;
 
 import com.learning.identity_server.dto.request.UserCreateRequest;
 import com.learning.identity_server.dto.request.UserUpdateRequest;
+import com.learning.identity_server.dto.response.ApiResponse;
 import com.learning.identity_server.entity.User;
 import com.learning.identity_server.service.UserService;
 import jakarta.validation.Valid;
@@ -17,8 +18,10 @@ public class UserController {
     private UserService _userService;
 
     @PostMapping
-    User createUser(@RequestBody @Valid UserCreateRequest request){
-        return _userService.createRequest(request);
+    ApiResponse<User> createUser(@RequestBody @Valid UserCreateRequest request){
+        var response = new ApiResponse<User>();
+        response.setResult(_userService.createRequest(request));
+        return response;
     }
 
     @GetMapping
