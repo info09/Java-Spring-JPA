@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class User {
-    @jakarta.persistence.Id
+    @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String Id;
     private String userName;
