@@ -1,6 +1,7 @@
 package com.learning.identity_server.controller;
 
 import com.learning.identity_server.dto.request.UserCreateRequest;
+import com.learning.identity_server.dto.request.UserDto;
 import com.learning.identity_server.dto.request.UserUpdateRequest;
 import com.learning.identity_server.dto.response.ApiResponse;
 import com.learning.identity_server.entity.User;
@@ -18,29 +19,38 @@ public class UserController {
     private UserService _userService;
 
     @PostMapping
-    ApiResponse<User> createUser(@RequestBody @Valid UserCreateRequest request){
-        var response = new ApiResponse<User>();
+    ApiResponse<UserDto> createUser(@RequestBody @Valid UserCreateRequest request){
+        var response = new ApiResponse<UserDto>();
         response.setResult(_userService.createRequest(request));
         return response;
     }
 
     @GetMapping
-    List<User> getAll(){
-        return _userService.getAll();
+    ApiResponse<List<UserDto>> getAll(){
+        var response = new ApiResponse<List<UserDto>>();
+        response.setResult(_userService.getAll());
+        return response;
     }
 
     @GetMapping("/{userId}")
-    User getById(@PathVariable("userId") String userId){
-        return _userService.getByUserId(userId);
+    ApiResponse<UserDto> getById(@PathVariable("userId") String userId){
+        var response = new ApiResponse<UserDto>();
+        response.setResult(_userService.getByUserId(userId));
+        return response;
     }
 
     @PutMapping("/{userId}")
-    User updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request){
-        return _userService.updateRequest(userId, request);
+    ApiResponse<UserDto> updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request){
+        var response = new ApiResponse<UserDto>();
+        response.setResult(_userService.updateRequest(userId, request));
+        return response;
     }
 
     @DeleteMapping("/{userId}")
-    String deleteUser(@PathVariable String userId){
-        return _userService.deleteUser(userId);
+    ApiResponse<String> deleteUser(@PathVariable String userId){
+        var response = new ApiResponse<String>();
+        _userService.deleteUser(userId);
+        response.setMessage("Thành công");
+        return response;
     }
 }

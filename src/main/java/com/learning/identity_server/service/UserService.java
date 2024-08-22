@@ -1,55 +1,54 @@
 package com.learning.identity_server.service;
 
 import com.learning.identity_server.dto.request.UserCreateRequest;
+import com.learning.identity_server.dto.request.UserDto;
 import com.learning.identity_server.dto.request.UserUpdateRequest;
-import com.learning.identity_server.entity.User;
 import com.learning.identity_server.exception.AppException;
 import com.learning.identity_server.exception.ErrorCode;
+import com.learning.identity_server.mapper.IUserMapper;
 import com.learning.identity_server.repository.IUserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
-    @Autowired
-    private IUserRepository _userRepository;
+    IUserRepository _userRepository;
+    IUserMapper _userMapper;
 
-    public User createRequest(UserCreateRequest request){
-        if(_userRepository.existsByUserName(request.getUserName()))
+    public UserDto createRequest(UserCreateRequest request) {
+        if (_userRepository.existsByUserName(request.getUserName()))
             throw new AppException(ErrorCode.USER_EXISTED);
-        
-        var user = new User();
-        user.setUserName(request.getUserName());
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
 
-        return _userRepository.save(user);
+        var user = _userMapper.toUser(request);
+
+        return _userMapper.toUserDto(_userRepository.save(user));
     }
 
-    public User updateRequest(String userId, UserUpdateRequest request){
-        var user = getByUserId(userId);
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
+    public UserDto updateRequest(String userId, UserUpdateRequest request) {
+        var user = _userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return _userRepository.save(user);
+        _userMapper.updateUser(user, request);
+
+        return _userMapper.toUserDto(_userRepository.save(user));
     }
 
-    public List<User> getAll(){
-        return  _userRepository.findAll();
+    public List<UserDto> getAll() {
+        return _userRepository.findAll().stream().map(_userMapper::toUserDto).toList();
     }
 
-    public User getByUserId(String id){
-        return _userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    public UserDto getByUserId(String id) {
+        return _userMapper.toUserDto(_userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found")));
     }
 
-    public String deleteUser(String id){
-        var user = getByUserId(id);
-        _userRepository.delete(user);
-        return user.getId();
+    public void deleteUser(String id) {
+        _userRepository.deleteById(id);
     }
 }
