@@ -3,6 +3,8 @@ package com.learning.identity_server.service;
 import com.learning.identity_server.dto.request.UserCreateRequest;
 import com.learning.identity_server.dto.request.UserUpdateRequest;
 import com.learning.identity_server.entity.User;
+import com.learning.identity_server.exception.AppException;
+import com.learning.identity_server.exception.ErrorCode;
 import com.learning.identity_server.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,7 @@ public class UserService {
 
     public User createRequest(UserCreateRequest request){
         if(_userRepository.existsByUserName(request.getUserName()))
-            throw new RuntimeException("User exited");
+            throw new AppException(ErrorCode.USER_EXISTED);
         
         var user = new User();
         user.setUserName(request.getUserName());
