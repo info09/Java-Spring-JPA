@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  #database section
+  mysql.db:
+    image: mysql:8.0.39
+
+#network section
+networks:
+  default:
+    name: database
+    driver: bridge
+
+#volumes sections
+volumes:
+  mysql_data:
+    name: mysql_data
