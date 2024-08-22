@@ -31,6 +31,13 @@ public class UserController {
         return response;
     }
 
+    @GetMapping("/getByUserName/{userName}")
+    ApiResponse<UserDto> getByUserName(@PathVariable String userName) {
+        var response = new ApiResponse<UserDto>();
+        response.setResult(_userService.getByUserName(userName));
+        return response;
+    }
+
     @GetMapping("/{userId}")
     ApiResponse<UserDto> getById(@PathVariable("userId") String userId) {
         var response = new ApiResponse<UserDto>();

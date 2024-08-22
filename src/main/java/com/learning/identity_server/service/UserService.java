@@ -10,6 +10,7 @@ import com.learning.identity_server.repository.IUserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +27,8 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
 
         var user = _userMapper.toUser(request);
+        var passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         return _userMapper.toUserDto(_userRepository.save(user));
     }
@@ -50,5 +53,9 @@ public class UserService {
 
     public void deleteUser(String id) {
         _userRepository.deleteById(id);
+    }
+
+    public UserDto getByUserName(String userName) {
+        return _userMapper.toUserDto(_userRepository.findByuserName(userName).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 }
