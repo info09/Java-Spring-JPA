@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class AuthService {
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
-    public AuthResponse Authenticated(AuthRequest request) {
+    public AuthResponse Authenticated(@NotNull AuthRequest request) {
         var user = _userRepository.findByuserName(request.getUserName()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         var passwordEncoder = new BCryptPasswordEncoder(10);
 
@@ -53,7 +54,7 @@ public class AuthService {
         return AuthResponse.builder().isAuthenticate(true).token(token).build();
     }
 
-    public IntrospectResponse Introspect(IntrospectRequest request) throws JOSEException, ParseException {
+    public IntrospectResponse Introspect(@NotNull IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
 
         var verifier = new MACVerifier(SIGNER_KEY.getBytes());
@@ -69,7 +70,7 @@ public class AuthService {
                 .build();
     }
 
-    private String generateToken(User user) {
+    private String generateToken(@NotNull User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
@@ -95,10 +96,10 @@ public class AuthService {
         }
     }
 
-    private String buildScope(User user) {
+    private String buildScope(@NotNull User user) {
         var stringJoiner = new StringJoiner(" ");
         if (!CollectionUtils.isEmpty(user.getRoles())) {
-            user.getRoles().forEach(role -> stringJoiner.add(role));
+            user.getRoles().forEach(stringJoiner::add);
         }
 
         return stringJoiner.toString();

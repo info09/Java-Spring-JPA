@@ -11,6 +11,10 @@ import com.learning.identity_server.repository.IUserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +29,7 @@ public class UserService {
     IUserMapper _userMapper;
     PasswordEncoder passwordEncoder;
 
-    public UserDto createRequest(@org.jetbrains.annotations.NotNull UserCreateRequest request) {
+    public UserDto createRequest(@NotNull UserCreateRequest request) {
         if (_userRepository.existsByUserName(request.getUserName()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
@@ -48,10 +52,12 @@ public class UserService {
         return _userMapper.toUserDto(_userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserDto> getAll() {
         return _userRepository.findAll().stream().map(_userMapper::toUserDto).toList();
     }
 
+    @PostAuthorize("returnObject.userName == authentication.name || hasRole('ADMIN')")
     public UserDto getByUserId(String id) {
         return _userMapper.toUserDto(_userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found")));
@@ -62,6 +68,12 @@ public class UserService {
     }
 
     public UserDto getByUserName(String userName) {
+        return _userMapper.toUserDto(_userRepository.findByuserName(userName).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+    }
+
+    public UserDto getProfile() {
+        var context = SecurityContextHolder.getContext();
+        var userName = context.getAuthentication().getName();
         return _userMapper.toUserDto(_userRepository.findByuserName(userName).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 }

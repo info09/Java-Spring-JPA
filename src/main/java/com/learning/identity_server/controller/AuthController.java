@@ -5,15 +5,16 @@ import com.learning.identity_server.dto.request.IntrospectRequest;
 import com.learning.identity_server.dto.response.ApiResponse;
 import com.learning.identity_server.dto.response.AuthResponse;
 import com.learning.identity_server.dto.response.IntrospectResponse;
-import com.learning.identity_server.dto.response.UserDto;
 import com.learning.identity_server.service.AuthService;
 import com.learning.identity_server.service.UserService;
 import com.nimbusds.jose.JOSEException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
 
@@ -42,15 +43,5 @@ public class AuthController {
         return ApiResponse.<IntrospectResponse>builder()
                 .result(result)
                 .build();
-    }
-
-    @GetMapping("/profile")
-    ApiResponse<UserDto> getProfile() {
-        var response = new ApiResponse<UserDto>();
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        var userName = authentication.getName();
-        var userDto = _userService.getByUserName(userName);
-        response.setResult(userDto);
-        return response;
     }
 }
