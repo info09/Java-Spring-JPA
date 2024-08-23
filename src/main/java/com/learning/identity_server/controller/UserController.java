@@ -1,9 +1,9 @@
 package com.learning.identity_server.controller;
 
 import com.learning.identity_server.dto.request.UserCreateRequest;
-import com.learning.identity_server.dto.request.UserDto;
 import com.learning.identity_server.dto.request.UserUpdateRequest;
 import com.learning.identity_server.dto.response.ApiResponse;
+import com.learning.identity_server.dto.response.UserDto;
 import com.learning.identity_server.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,4 +59,6 @@ public class UserController {
         response.setMessage("Thành công");
         return response;
     }
+
+
 }
