@@ -3,7 +3,6 @@ package com.learning.identity_server.service;
 import com.learning.identity_server.dto.request.UserCreateRequest;
 import com.learning.identity_server.dto.request.UserUpdateRequest;
 import com.learning.identity_server.dto.response.UserResponse;
-import com.learning.identity_server.enums.Role;
 import com.learning.identity_server.exception.AppException;
 import com.learning.identity_server.exception.ErrorCode;
 import com.learning.identity_server.mapper.IUserMapper;
@@ -37,10 +36,6 @@ public class UserService {
 
         var user = _userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.User.name());
-        //user.setRoles(roles);
 
         return _userMapper.toUserDto(_userRepository.save(user));
     }
