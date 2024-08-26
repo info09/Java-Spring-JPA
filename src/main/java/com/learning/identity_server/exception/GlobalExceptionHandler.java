@@ -1,16 +1,20 @@
 package com.learning.identity_server.exception;
 
 import com.learning.identity_server.dto.response.ApiResponse;
+import jakarta.validation.ConstraintViolation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.Map;
 import java.util.Objects;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    private static final String MIN_ATTRIBUTE = "min";
+
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse<?>> handlingRuntimeException(Exception ex) {
         var response = new ApiResponse<>();
@@ -49,16 +53,33 @@ public class GlobalExceptionHandler {
         String enumKey = Objects.requireNonNull(ex.getFieldError()).getDefaultMessage();
 
         var errCode = ErrorCode.INVALID_KEY;
+        Map<String, Object> attributes = null;
         try {
             errCode = ErrorCode.valueOf(enumKey);
+
+            var constrainViolation = ex.getBindingResult()
+                    .getAllErrors()
+                    .getFirst()
+                    .unwrap(ConstraintViolation.class);
+
+            attributes = constrainViolation.getConstraintDescriptor().getAttributes();
         } catch (IllegalArgumentException e) {
 
         }
 
         var response = new ApiResponse<>();
         response.setCode(errCode.getCode());
-        response.setMessage(errCode.getMessage());
+        response.setMessage(
+                Objects.nonNull(attributes)
+                        ? mapAttribute(errCode.getMessage(), attributes)
+                        : errCode.getMessage());
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    private String mapAttribute(String message, Map<String, Object> attributes) {
+        String minValue = String.valueOf(attributes.get(MIN_ATTRIBUTE));
+
+        return message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
     }
 }
