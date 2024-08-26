@@ -99,7 +99,7 @@ public class AuthService {
     private String buildScope(@NotNull User user) {
         var stringJoiner = new StringJoiner(" ");
         if (!CollectionUtils.isEmpty(user.getRoles())) {
-            user.getRoles().forEach(stringJoiner::add);
+            //user.getRoles().forEach(stringJoiner::add);
         }
 
         return stringJoiner.toString();
