@@ -11,8 +11,8 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserDto {
-    Set<String> roles;
+public class UserResponse {
+    Set<RoleResponse> roles;
     String id;
     String userName;
     String firstName;

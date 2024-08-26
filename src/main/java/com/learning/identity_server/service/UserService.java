@@ -2,11 +2,12 @@ package com.learning.identity_server.service;
 
 import com.learning.identity_server.dto.request.UserCreateRequest;
 import com.learning.identity_server.dto.request.UserUpdateRequest;
-import com.learning.identity_server.dto.response.UserDto;
+import com.learning.identity_server.dto.response.UserResponse;
 import com.learning.identity_server.enums.Role;
 import com.learning.identity_server.exception.AppException;
 import com.learning.identity_server.exception.ErrorCode;
 import com.learning.identity_server.mapper.IUserMapper;
+import com.learning.identity_server.repository.IRoleRepository;
 import com.learning.identity_server.repository.IUserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +27,11 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
     IUserRepository _userRepository;
+    IRoleRepository _roleRepository;
     IUserMapper _userMapper;
     PasswordEncoder passwordEncoder;
 
-    public UserDto createRequest(@NotNull UserCreateRequest request) {
+    public UserResponse createRequest(@NotNull UserCreateRequest request) {
         if (_userRepository.existsByUserName(request.getUserName()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
@@ -43,22 +45,25 @@ public class UserService {
         return _userMapper.toUserDto(_userRepository.save(user));
     }
 
-    public UserDto updateRequest(String userId, UserUpdateRequest request) {
+    public UserResponse updateRequest(String userId, UserUpdateRequest request) {
         var user = _userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         _userMapper.updateUser(user, request);
 
+        var roles = _roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
+
         return _userMapper.toUserDto(_userRepository.save(user));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<UserDto> getAll() {
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('CREATE_DATA')")
+    public List<UserResponse> getAll() {
         return _userRepository.findAll().stream().map(_userMapper::toUserDto).toList();
     }
 
     @PostAuthorize("returnObject.userName == authentication.name || hasRole('ADMIN')")
-    public UserDto getByUserId(String id) {
+    public UserResponse getByUserId(String id) {
         return _userMapper.toUserDto(_userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found")));
     }
@@ -67,11 +72,11 @@ public class UserService {
         _userRepository.deleteById(id);
     }
 
-    public UserDto getByUserName(String userName) {
+    public UserResponse getByUserName(String userName) {
         return _userMapper.toUserDto(_userRepository.findByuserName(userName).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
-    public UserDto getProfile() {
+    public UserResponse getProfile() {
         var context = SecurityContextHolder.getContext();
         var userName = context.getAuthentication().getName();
         return _userMapper.toUserDto(_userRepository.findByuserName(userName).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
