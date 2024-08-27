@@ -95,4 +95,24 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("code").value(ErrorCode.INVALID_USERNAME.getCode()))
                 .andExpect(MockMvcResultMatchers.jsonPath("message").value(ErrorCode.INVALID_USERNAME.getMessage()));
     }
+
+    @Test
+    void createUser_passswordInValid_failed() throws Exception {
+        // GIVEN
+        request.setPassword("123");
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String content = objectMapper.writeValueAsString(request);
+
+        Mockito.when(userService.createRequest(ArgumentMatchers.any())).thenReturn(userResponse);
+
+        //WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("code").value(ErrorCode.INVALID_PASSWORD.getCode()))
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value(ErrorCode.INVALID_PASSWORD.getMessage()));
+    }
 }
