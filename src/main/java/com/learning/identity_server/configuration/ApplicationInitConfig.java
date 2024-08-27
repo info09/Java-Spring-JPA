@@ -1,11 +1,14 @@
 package com.learning.identity_server.configuration;
 
+import com.learning.identity_server.constants.PredefineRole;
+import com.learning.identity_server.entity.Role;
 import com.learning.identity_server.entity.User;
-import com.learning.identity_server.enums.Role;
+import com.learning.identity_server.repository.IRoleRepository;
 import com.learning.identity_server.repository.IUserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -19,19 +22,34 @@ import java.util.HashSet;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class ApplicationInitConfig {
+    @NonFinal
+    static final String ADMIN_USER_NAME = "admin";
+    @NonFinal
+    static final String ADMIN_PASSWORD = "admin";
     PasswordEncoder passwordEncoder;
 
     @Bean
-    ApplicationRunner applicationRunner(IUserRepository _userRepository) {
+    ApplicationRunner applicationRunner(IUserRepository _userRepository, IRoleRepository _roleRepository) {
+        log.info("Initializing application.....");
         return args -> {
-            if (_userRepository.findByuserName("admin").isEmpty()) {
-                var roles = new HashSet<String>();
-                roles.add(Role.ADMIN.name());
+            if (_userRepository.findByuserName(ADMIN_USER_NAME).isEmpty()) {
+                var roleAdmin = _roleRepository.save(Role.builder()
+                        .name(PredefineRole.ADMIN.name())
+                        .description("Admin Role")
+                        .build());
+
+                _roleRepository.save(Role.builder()
+                        .name(PredefineRole.USER.name())
+                        .description("User Role")
+                        .build());
+
+                var roles = new HashSet<Role>();
+                roles.add(roleAdmin);
 
                 var user = User.builder()
                         .userName("admin")
                         .password(passwordEncoder.encode("admin"))
-                        //.roles(roles)
+                        .roles(roles)
                         .build();
                 _userRepository.save(user);
                 log.warn("admin user has been created with default password: admin, please change it");
