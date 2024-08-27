@@ -3,6 +3,7 @@ package com.learning.identity_server.service;
 import com.learning.identity_server.dto.request.AuthRequest;
 import com.learning.identity_server.dto.request.IntrospectRequest;
 import com.learning.identity_server.dto.request.LogoutRequest;
+import com.learning.identity_server.dto.request.RefreshTokenRequest;
 import com.learning.identity_server.dto.response.AuthResponse;
 import com.learning.identity_server.dto.response.IntrospectResponse;
 import com.learning.identity_server.entity.InvalidatedToken;
@@ -83,6 +84,25 @@ public class AuthService {
         var invalidateToken = InvalidatedToken.builder().id(jwtId).expiredTime(expirationTime).build();
 
         _invalidatedTokenRepository.save(invalidateToken);
+    }
+
+    public AuthResponse refreshToken(RefreshTokenRequest request) throws ParseException, JOSEException {
+        var jwtSigned = verifyToken(request.getToken());
+        var jwtId = jwtSigned.getJWTClaimsSet().getJWTID();
+        var expiredTime = jwtSigned.getJWTClaimsSet().getExpirationTime();
+
+        var invalidatedToken = InvalidatedToken.builder()
+                .id(jwtId)
+                .expiredTime(expiredTime)
+                .build();
+        _invalidatedTokenRepository.save(invalidatedToken);
+
+        var userName = jwtSigned.getJWTClaimsSet().getSubject();
+        var user = _userRepository.findByuserName(userName).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+
+        var token = generateToken(user);
+
+        return AuthResponse.builder().isAuthenticate(true).token(token).build();
     }
 
     private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
