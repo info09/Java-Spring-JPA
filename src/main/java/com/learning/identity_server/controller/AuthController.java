@@ -3,6 +3,7 @@ package com.learning.identity_server.controller;
 import com.learning.identity_server.dto.request.AuthRequest;
 import com.learning.identity_server.dto.request.IntrospectRequest;
 import com.learning.identity_server.dto.request.LogoutRequest;
+import com.learning.identity_server.dto.request.RefreshTokenRequest;
 import com.learning.identity_server.dto.response.ApiResponse;
 import com.learning.identity_server.dto.response.AuthResponse;
 import com.learning.identity_server.dto.response.IntrospectResponse;
@@ -36,6 +37,12 @@ public class AuthController {
                         .token(result.getToken())
                         .build())
                 .build();
+    }
+
+    @PostMapping("/refresh")
+    ApiResponse<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest request) throws ParseException, JOSEException {
+        var result = _authService.refreshToken(request);
+        return ApiResponse.<AuthResponse>builder().result(result).build();
     }
 
     @PostMapping("/introspect")
