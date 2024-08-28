@@ -1,10 +1,8 @@
 package com.learning.identity_server.configuration;
 
-import java.text.ParseException;
-import java.util.Objects;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.learning.identity_server.dto.request.IntrospectRequest;
+import com.learning.identity_server.service.AuthService;
+import com.nimbusds.jose.JOSEException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -13,24 +11,26 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Component;
 
-import com.learning.identity_server.dto.request.IntrospectRequest;
-import com.learning.identity_server.service.AuthService;
-import com.nimbusds.jose.JOSEException;
+import javax.crypto.spec.SecretKeySpec;
+import java.text.ParseException;
+import java.util.Objects;
 
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
+    private final AuthService authService;
     private NimbusJwtDecoder nimbusJwtDecoder = null;
 
     @Value("${jwt.signerKey}")
     private String signerKey;
 
-    @Autowired
-    private AuthService authService;
+    public CustomJwtDecoder(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Override
     public Jwt decode(String token) throws JwtException {
         try {
-            var response = authService.Introspect(
+            var response = authService.introspect(
                     IntrospectRequest.builder().token(token).build());
 
             if (!response.isValid()) throw new JwtException("Token invalid");

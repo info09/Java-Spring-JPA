@@ -38,16 +38,16 @@ public class ApplicationInitConfig {
             prefix = "spring",
             value = "datasource.driverClassName",
             havingValue = "com.mysql.cj.jdbc.Driver")
-    ApplicationRunner applicationRunner(IUserRepository _userRepository, IRoleRepository _roleRepository) {
+    ApplicationRunner applicationRunner(IUserRepository userRepository, IRoleRepository roleRepository) {
         log.info("Initializing application.....");
         return args -> {
-            if (_userRepository.findByuserName(ADMIN_USER_NAME).isEmpty()) {
-                var roleAdmin = _roleRepository.save(Role.builder()
+            if (userRepository.findByuserName(ADMIN_USER_NAME).isEmpty()) {
+                var roleAdmin = roleRepository.save(Role.builder()
                         .name(PredefineRole.ADMIN_ROLE)
                         .description("Admin Role")
                         .build());
 
-                _roleRepository.save(Role.builder()
+                roleRepository.save(Role.builder()
                         .name(PredefineRole.USER_ROLE)
                         .description("User Role")
                         .build());
@@ -56,11 +56,11 @@ public class ApplicationInitConfig {
                 roles.add(roleAdmin);
 
                 var user = User.builder()
-                        .userName("admin")
-                        .password(passwordEncoder.encode("admin"))
+                        .userName(ADMIN_USER_NAME)
+                        .password(passwordEncoder.encode(ADMIN_PASSWORD))
                         .roles(roles)
                         .build();
-                _userRepository.save(user);
+                userRepository.save(user);
                 log.warn("admin user has been created with default password: admin, please change it");
             }
         };

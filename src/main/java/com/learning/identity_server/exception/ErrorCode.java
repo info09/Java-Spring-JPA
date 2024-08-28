@@ -3,6 +3,9 @@ package com.learning.identity_server.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
+import lombok.Getter;
+
+@Getter
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_KEY(1001, "Uncategorized error", HttpStatus.BAD_REQUEST),
@@ -15,37 +18,13 @@ public enum ErrorCode {
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     ;
 
-    private int code;
-    private String message;
-    private HttpStatusCode statusCode;
+    private final int code;
+    private final String message;
+    private final HttpStatusCode statusCode;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
         this.code = code;
         this.message = message;
-        this.statusCode = statusCode;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public HttpStatusCode getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(HttpStatusCode statusCode) {
         this.statusCode = statusCode;
     }
 }

@@ -1,7 +1,15 @@
 package com.learning.identity_server.controller;
 
-import java.time.LocalDate;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.learning.identity_server.dto.request.AuthRequest;
+import com.learning.identity_server.dto.request.IntrospectRequest;
+import com.learning.identity_server.dto.request.LogoutRequest;
+import com.learning.identity_server.dto.request.RefreshTokenRequest;
+import com.learning.identity_server.dto.response.AuthResponse;
+import com.learning.identity_server.dto.response.IntrospectResponse;
+import com.learning.identity_server.service.AuthService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -16,23 +24,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.learning.identity_server.dto.request.AuthRequest;
-import com.learning.identity_server.dto.request.IntrospectRequest;
-import com.learning.identity_server.dto.request.LogoutRequest;
-import com.learning.identity_server.dto.request.RefreshTokenRequest;
-import com.learning.identity_server.dto.response.AuthResponse;
-import com.learning.identity_server.dto.response.IntrospectResponse;
-import com.learning.identity_server.service.AuthService;
-
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/test.properties")
-public class AuthControllerTest {
+class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -45,7 +41,6 @@ public class AuthControllerTest {
     private IntrospectResponse introspectResponse;
     private LogoutRequest logoutRequest;
     private RefreshTokenRequest refreshTokenRequest;
-    private LocalDate dob;
 
     @BeforeEach
     void Init() {
@@ -69,7 +64,7 @@ public class AuthControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
         String content = objectMapper.writeValueAsString(request);
 
-        Mockito.when(authService.Authenticated(ArgumentMatchers.any())).thenReturn(response);
+        Mockito.when(authService.authenticated(ArgumentMatchers.any())).thenReturn(response);
 
         // WHEN, THEN
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
@@ -87,7 +82,7 @@ public class AuthControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
         String content = objectMapper.writeValueAsString(introspectRequest);
 
-        Mockito.when(authService.Introspect(ArgumentMatchers.any())).thenReturn(introspectResponse);
+        Mockito.when(authService.introspect(ArgumentMatchers.any())).thenReturn(introspectResponse);
 
         // WHEN, THEN
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/introspect")
@@ -106,7 +101,7 @@ public class AuthControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
         String content = objectMapper.writeValueAsString(introspectRequest);
 
-        Mockito.when(authService.Introspect(ArgumentMatchers.any())).thenReturn(introspectResponse);
+        Mockito.when(authService.introspect(ArgumentMatchers.any())).thenReturn(introspectResponse);
 
         // WHEN, THEN
         mockMvc.perform(MockMvcRequestBuilders.post("/auth/introspect")

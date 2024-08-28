@@ -1,11 +1,13 @@
 package com.learning.identity_server.controller;
 
-import static org.mockito.ArgumentMatchers.anyString;
-
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.learning.identity_server.dto.request.UserCreateRequest;
+import com.learning.identity_server.dto.request.UserUpdateRequest;
+import com.learning.identity_server.dto.response.UserResponse;
+import com.learning.identity_server.exception.ErrorCode;
+import com.learning.identity_server.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -24,21 +26,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.learning.identity_server.dto.request.UserCreateRequest;
-import com.learning.identity_server.dto.request.UserUpdateRequest;
-import com.learning.identity_server.dto.response.UserResponse;
-import com.learning.identity_server.exception.ErrorCode;
-import com.learning.identity_server.service.UserService;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @Slf4j
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/test.properties")
-public class UserControllerTest {
+class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -208,9 +206,6 @@ public class UserControllerTest {
     @WithMockUser(username = "admin")
     void deleteUser_success() throws Exception {
         // GIVEN
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        String content = objectMapper.writeValueAsString(userUpdateRequest);
 
         Mockito.doNothing().when(userService).deleteUser(anyString());
 

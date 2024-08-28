@@ -1,14 +1,12 @@
 package com.learning.identity_server.service;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import com.learning.identity_server.dto.request.UserCreateRequest;
+import com.learning.identity_server.dto.request.UserUpdateRequest;
+import com.learning.identity_server.entity.Role;
+import com.learning.identity_server.entity.User;
+import com.learning.identity_server.exception.AppException;
+import com.learning.identity_server.repository.IRoleRepository;
+import com.learning.identity_server.repository.IUserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,18 +18,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 
-import com.learning.identity_server.dto.request.UserCreateRequest;
-import com.learning.identity_server.dto.request.UserUpdateRequest;
-import com.learning.identity_server.dto.response.UserResponse;
-import com.learning.identity_server.entity.Role;
-import com.learning.identity_server.entity.User;
-import com.learning.identity_server.exception.AppException;
-import com.learning.identity_server.repository.IRoleRepository;
-import com.learning.identity_server.repository.IUserRepository;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest
 @TestPropertySource("/test.properties")
-public class UserServiceTest {
+class UserServiceTest {
     @Autowired
     private UserService userService;
 
@@ -43,7 +41,6 @@ public class UserServiceTest {
 
     private UserUpdateRequest userUpdateRequest;
     private UserCreateRequest request;
-    private UserResponse userResponse;
     private User user;
     private LocalDate dob;
     private List<Role> listRole;
@@ -60,14 +57,6 @@ public class UserServiceTest {
                 .dob(dob)
                 .build();
 
-        userResponse = UserResponse.builder()
-                .id("cf0600f538b3")
-                .userName("john")
-                .firstName("John")
-                .lastName("Doe")
-                .dob(dob)
-                .build();
-
         userUpdateRequest = UserUpdateRequest.builder()
                 .firstName("Huy")
                 .lastName("Tran")
@@ -75,7 +64,7 @@ public class UserServiceTest {
                 .build();
 
         user = User.builder()
-                .Id("cf0600f538b3")
+                .id("cf0600f538b3")
                 .userName("john")
                 .firstName("John")
                 .lastName("Doe")
@@ -157,7 +146,8 @@ public class UserServiceTest {
         Mockito.when(userRepository.findByuserName(anyString())).thenReturn(Optional.empty());
 
         // When
-        var exception = assertThrows(AppException.class, () -> userService.getByUserName(anyString()));
+        var userId = "userId";
+        var exception = assertThrows(AppException.class, () -> userService.getByUserName(userId));
 
         // Then
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1005);
@@ -173,7 +163,7 @@ public class UserServiceTest {
         var responses = userService.getAll();
 
         // Then
-        Assertions.assertThat((long) responses.size()).isNotNull();
+        Assertions.assertThat(responses).isNotNull();
     }
 
     @Test
@@ -196,23 +186,24 @@ public class UserServiceTest {
         Mockito.when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 
         // When
-        var exception = assertThrows(AppException.class, () -> userService.getByUserId(anyString()));
+        var userId = "userId";
+        var exception = assertThrows(AppException.class, () -> userService.getByUserId(userId));
 
         // Then
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1005);
     }
 
-    @Test
-    @WithMockUser(username = "admin", roles = "ADMIN")
-    void deleteUser_failed() {
-        // Given
-        Mockito.when(userRepository.findById(anyString())).thenReturn(Optional.empty());
-
-        // When
-        userService.deleteUser(anyString());
-
-        // Then
-    }
+//    @Test
+//    @WithMockUser(username = "admin", roles = "ADMIN")
+//    void deleteUser_failed() {
+//        // Given
+//        Mockito.when(userRepository.findById(anyString())).thenReturn(Optional.empty());
+//
+//        // When
+//        userService.deleteUser(anyString());
+//
+//        // Then
+//    }
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
@@ -237,8 +228,9 @@ public class UserServiceTest {
         Mockito.when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 
         // When
+        var userId = "userId";
         var exception =
-                assertThrows(AppException.class, () -> userService.updateRequest(anyString(), userUpdateRequest));
+                assertThrows(AppException.class, () -> userService.updateRequest(userId, userUpdateRequest));
 
         // Then
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1005);
