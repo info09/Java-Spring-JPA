@@ -45,6 +45,7 @@ public class AuthController {
         return ApiResponse.<AuthResponse>builder()
                 .result(AuthResponse.builder()
                         .token(result.getToken())
+                        .isAuthenticate(true)
                         .build())
                 .build();
     }

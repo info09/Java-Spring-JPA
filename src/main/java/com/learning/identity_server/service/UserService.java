@@ -1,5 +1,6 @@
 package com.learning.identity_server.service;
 
+import com.learning.identity_server.constants.PredefineRole;
 import com.learning.identity_server.dto.request.UserCreateRequest;
 import com.learning.identity_server.dto.request.UserUpdateRequest;
 import com.learning.identity_server.dto.response.UserResponse;
@@ -11,7 +12,6 @@ import com.learning.identity_server.repository.IUserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,19 +30,22 @@ public class UserService {
     IUserMapper _userMapper;
     PasswordEncoder passwordEncoder;
 
-    public UserResponse createRequest(@NotNull UserCreateRequest request) {
+    public UserResponse createRequest(UserCreateRequest request) {
         if (_userRepository.existsByUserName(request.getUserName()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
         var user = _userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
+        HashSet<String> roles = new HashSet<>();
+        roles.add(PredefineRole.USER_ROLE);
+
         return _userMapper.toUserDto(_userRepository.save(user));
     }
 
     public UserResponse updateRequest(String userId, UserUpdateRequest request) {
         var user = _userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         _userMapper.updateUser(user, request);
 
@@ -60,7 +63,7 @@ public class UserService {
     @PostAuthorize("returnObject.userName == authentication.name || hasRole('ADMIN')")
     public UserResponse getByUserId(String id) {
         return _userMapper.toUserDto(_userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found")));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
     public void deleteUser(String id) {
@@ -73,7 +76,10 @@ public class UserService {
 
     public UserResponse getProfile() {
         var context = SecurityContextHolder.getContext();
-        var userName = context.getAuthentication().getName();
-        return _userMapper.toUserDto(_userRepository.findByuserName(userName).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+        String name = context.getAuthentication().getName();
+
+        var user = _userRepository.findByuserName(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return _userMapper.toUserDto(user);
     }
 }

@@ -60,11 +60,9 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    ApiResponse<String> deleteUser(@PathVariable String userId) {
-        var response = new ApiResponse<String>();
+    ApiResponse<Void> deleteUser(@PathVariable String userId) {
         _userService.deleteUser(userId);
-        response.setMessage("Thành công");
-        return response;
+        return ApiResponse.<Void>builder().build();
     }
 
     @GetMapping("/profile")
