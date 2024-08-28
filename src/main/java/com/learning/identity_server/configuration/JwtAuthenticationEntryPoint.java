@@ -1,19 +1,25 @@
 package com.learning.identity_server.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.learning.identity_server.dto.response.ApiResponse;
-import com.learning.identity_server.exception.ErrorCode;
+import java.io.IOException;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.http.MediaType;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.learning.identity_server.dto.response.ApiResponse;
+import com.learning.identity_server.exception.ErrorCode;
 
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, org.springframework.security.core.AuthenticationException authException) throws IOException, ServletException {
+    public void commence(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            org.springframework.security.core.AuthenticationException authException)
+            throws IOException, ServletException {
         var errorCode = ErrorCode.UNAUTHENTICATED;
 
         response.setStatus(errorCode.getStatusCode().value());
@@ -21,7 +27,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         var apiResponse = ApiResponse.builder()
                 .code(errorCode.getCode())
-                .message(errorCode.getMessage()).build();
+                .message(errorCode.getMessage())
+                .build();
 
         var objectMapper = new ObjectMapper();
 

@@ -1,15 +1,17 @@
 package com.learning.identity_server.exception;
 
-import com.learning.identity_server.dto.response.ApiResponse;
+import java.util.Map;
+import java.util.Objects;
+
 import jakarta.validation.ConstraintViolation;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.Map;
-import java.util.Objects;
+import com.learning.identity_server.dto.response.ApiResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,17 +33,14 @@ public class GlobalExceptionHandler {
         response.setCode(errorCode.getCode());
         response.setMessage(errorCode.getMessage());
 
-        return ResponseEntity
-                .status(errorCode.getStatusCode())
-                .body(response);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(response);
     }
 
     @ExceptionHandler(value = AuthorizationDeniedException.class)
     ResponseEntity<ApiResponse<?>> handlingAccessDenied(AuthorizationDeniedException ex) {
         var errorCode = ErrorCode.UNAUTHORIZED;
 
-        return ResponseEntity
-                .status(errorCode.getStatusCode())
+        return ResponseEntity.status(errorCode.getStatusCode())
                 .body(ApiResponse.builder()
                         .code(errorCode.getCode())
                         .message(errorCode.getMessage())
@@ -57,10 +56,8 @@ public class GlobalExceptionHandler {
         try {
             errCode = ErrorCode.valueOf(enumKey);
 
-            var constrainViolation = ex.getBindingResult()
-                    .getAllErrors()
-                    .getFirst()
-                    .unwrap(ConstraintViolation.class);
+            var constrainViolation =
+                    ex.getBindingResult().getAllErrors().getFirst().unwrap(ConstraintViolation.class);
 
             attributes = constrainViolation.getConstraintDescriptor().getAttributes();
         } catch (IllegalArgumentException e) {
@@ -70,9 +67,7 @@ public class GlobalExceptionHandler {
         var response = new ApiResponse<>();
         response.setCode(errCode.getCode());
         response.setMessage(
-                Objects.nonNull(attributes)
-                        ? mapAttribute(errCode.getMessage(), attributes)
-                        : errCode.getMessage());
+                Objects.nonNull(attributes) ? mapAttribute(errCode.getMessage(), attributes) : errCode.getMessage());
 
         return ResponseEntity.badRequest().body(response);
     }

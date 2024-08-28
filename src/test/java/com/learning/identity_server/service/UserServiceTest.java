@@ -1,13 +1,14 @@
 package com.learning.identity_server.service;
 
-import com.learning.identity_server.dto.request.UserCreateRequest;
-import com.learning.identity_server.dto.request.UserUpdateRequest;
-import com.learning.identity_server.dto.response.UserResponse;
-import com.learning.identity_server.entity.Role;
-import com.learning.identity_server.entity.User;
-import com.learning.identity_server.exception.AppException;
-import com.learning.identity_server.repository.IRoleRepository;
-import com.learning.identity_server.repository.IUserRepository;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,14 +20,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import com.learning.identity_server.dto.request.UserCreateRequest;
+import com.learning.identity_server.dto.request.UserUpdateRequest;
+import com.learning.identity_server.dto.response.UserResponse;
+import com.learning.identity_server.entity.Role;
+import com.learning.identity_server.entity.User;
+import com.learning.identity_server.exception.AppException;
+import com.learning.identity_server.repository.IRoleRepository;
+import com.learning.identity_server.repository.IUserRepository;
 
 @SpringBootTest
 @TestPropertySource("/test.properties")
@@ -104,129 +105,127 @@ public class UserServiceTest {
         Mockito.when(userRepository.existsByUserName(anyString())).thenReturn(true);
 
         // WHEN
-        var exception = assertThrows(AppException.class,
-                () -> userService.createRequest(request));
+        var exception = assertThrows(AppException.class, () -> userService.createRequest(request));
 
         // THEN
-        Assertions.assertThat(exception.getErrorCode().getCode())
-                .isEqualTo(1002);
+        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1002);
     }
 
     @Test
     @WithMockUser(username = "admin")
     void getProfile_success() {
-        //Given
+        // Given
         Mockito.when(userRepository.findByuserName(anyString())).thenReturn(Optional.of(user));
 
-        //When
+        // When
         var response = userService.getProfile();
 
-        //Then
+        // Then
         Assertions.assertThat(response.getUserName()).isEqualTo(user.getUserName());
     }
 
     @Test
     @WithMockUser(username = "admin")
     void getProfile_userNotFound_failed() {
-        //Given
+        // Given
         Mockito.when(userRepository.findByuserName(anyString())).thenReturn(Optional.empty());
 
-        //When
+        // When
         var exception = assertThrows(AppException.class, () -> userService.getProfile());
 
-        //Then
+        // Then
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1005);
     }
 
     @Test
     @WithMockUser(username = "admin")
     void getByUserName_success() {
-        //Given
+        // Given
         Mockito.when(userRepository.findByuserName(anyString())).thenReturn(Optional.of(user));
 
-        //When
+        // When
         var response = userService.getByUserName(anyString());
 
-        //Then
+        // Then
         Assertions.assertThat(response.getUserName()).isEqualTo(user.getUserName());
     }
 
     @Test
     @WithMockUser(username = "admin")
     void getByUserName_userNotFound_failed() {
-        //Given
+        // Given
         Mockito.when(userRepository.findByuserName(anyString())).thenReturn(Optional.empty());
 
-        //When
+        // When
         var exception = assertThrows(AppException.class, () -> userService.getByUserName(anyString()));
 
-        //Then
+        // Then
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1005);
     }
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     void getAll_success() {
-        //Given
+        // Given
         Mockito.when(userRepository.findByuserName(anyString())).thenReturn(Optional.empty());
 
-        //When
+        // When
         var responses = userService.getAll();
 
-        //Then
+        // Then
         Assertions.assertThat((long) responses.size()).isNotNull();
     }
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     void getUserById_success() {
-        //Given
+        // Given
         Mockito.when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
 
-        //When
+        // When
         var responses = userService.getByUserId(anyString());
 
-        //Then
+        // Then
         Assertions.assertThat(responses.getUserName()).isEqualTo(user.getUserName());
     }
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     void getUserById_failed() {
-        //Given
+        // Given
         Mockito.when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 
-        //When
+        // When
         var exception = assertThrows(AppException.class, () -> userService.getByUserId(anyString()));
 
-        //Then
+        // Then
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1005);
     }
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     void deleteUser_failed() {
-        //Given
+        // Given
         Mockito.when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 
-        //When
+        // When
         userService.deleteUser(anyString());
 
-        //Then
+        // Then
     }
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     void updateUser_success() {
-        //Given
+        // Given
         Mockito.when(userRepository.findById(anyString())).thenReturn(Optional.of(user));
         Mockito.when(userRepository.save(any())).thenReturn(user);
         Mockito.when(roleRepository.findAllById(ArgumentMatchers.any())).thenReturn(listRole);
 
-        //When
+        // When
         var response = userService.updateRequest(anyString(), userUpdateRequest);
 
-        //Then
+        // Then
         Assertions.assertThat(response.getId()).isEqualTo(user.getId());
         Assertions.assertThat(response.getUserName()).isEqualTo(user.getUserName());
     }
@@ -234,13 +233,14 @@ public class UserServiceTest {
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     void updateUser_failed() {
-        //Given
+        // Given
         Mockito.when(userRepository.findById(anyString())).thenReturn(Optional.empty());
 
-        //When
-        var exception = assertThrows(AppException.class, () -> userService.updateRequest(anyString(), userUpdateRequest));
+        // When
+        var exception =
+                assertThrows(AppException.class, () -> userService.updateRequest(anyString(), userUpdateRequest));
 
-        //Then
+        // Then
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1005);
     }
 }

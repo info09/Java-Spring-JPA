@@ -1,6 +1,7 @@
 package com.learning.identity_server.entity;
 
 import jakarta.persistence.Entity;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,5 +15,6 @@ import lombok.experimental.FieldDefaults;
 public class Permission {
     @jakarta.persistence.Id
     String name;
+
     String description;
 }

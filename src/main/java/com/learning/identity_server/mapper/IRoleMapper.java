@@ -1,10 +1,11 @@
 package com.learning.identity_server.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
 import com.learning.identity_server.dto.request.RoleRequest;
 import com.learning.identity_server.dto.response.RoleResponse;
 import com.learning.identity_server.entity.Role;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface IRoleMapper {

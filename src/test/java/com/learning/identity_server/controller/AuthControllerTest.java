@@ -1,15 +1,7 @@
 package com.learning.identity_server.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.learning.identity_server.dto.request.AuthRequest;
-import com.learning.identity_server.dto.request.IntrospectRequest;
-import com.learning.identity_server.dto.request.LogoutRequest;
-import com.learning.identity_server.dto.request.RefreshTokenRequest;
-import com.learning.identity_server.dto.response.AuthResponse;
-import com.learning.identity_server.dto.response.IntrospectResponse;
-import com.learning.identity_server.service.AuthService;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -24,7 +16,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.learning.identity_server.dto.request.AuthRequest;
+import com.learning.identity_server.dto.request.IntrospectRequest;
+import com.learning.identity_server.dto.request.LogoutRequest;
+import com.learning.identity_server.dto.request.RefreshTokenRequest;
+import com.learning.identity_server.dto.response.AuthResponse;
+import com.learning.identity_server.dto.response.IntrospectResponse;
+import com.learning.identity_server.service.AuthService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootTest
@@ -50,10 +52,8 @@ public class AuthControllerTest {
 
         request = AuthRequest.builder().userName("admin").password("admin").build();
 
-        response = AuthResponse.builder()
-                .token("123qwerty")
-                .isAuthenticate(true)
-                .build();
+        response =
+                AuthResponse.builder().token("123qwerty").isAuthenticate(true).build();
 
         introspectRequest = IntrospectRequest.builder().token("123qwerty").build();
         introspectResponse = IntrospectResponse.builder().valid(true).build();
@@ -71,9 +71,8 @@ public class AuthControllerTest {
 
         Mockito.when(authService.Authenticated(ArgumentMatchers.any())).thenReturn(response);
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/auth/login")
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -90,9 +89,8 @@ public class AuthControllerTest {
 
         Mockito.when(authService.Introspect(ArgumentMatchers.any())).thenReturn(introspectResponse);
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/auth/introspect")
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/introspect")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -110,9 +108,8 @@ public class AuthControllerTest {
 
         Mockito.when(authService.Introspect(ArgumentMatchers.any())).thenReturn(introspectResponse);
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/auth/introspect")
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/introspect")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -129,9 +126,8 @@ public class AuthControllerTest {
 
         Mockito.doNothing().when(authService).logout(ArgumentMatchers.any());
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/auth/logout")
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/logout")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -147,9 +143,8 @@ public class AuthControllerTest {
 
         Mockito.when(authService.refreshToken(ArgumentMatchers.any())).thenReturn(response);
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/auth/refresh")
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/auth/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())

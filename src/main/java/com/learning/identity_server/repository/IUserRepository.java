@@ -1,10 +1,11 @@
 package com.learning.identity_server.repository;
 
-import com.learning.identity_server.entity.User;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import com.learning.identity_server.entity.User;
 
 @Repository
 public interface IUserRepository extends JpaRepository<User, String> {

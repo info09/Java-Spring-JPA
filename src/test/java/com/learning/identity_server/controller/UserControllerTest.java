@@ -1,13 +1,11 @@
 package com.learning.identity_server.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.learning.identity_server.dto.request.UserCreateRequest;
-import com.learning.identity_server.dto.request.UserUpdateRequest;
-import com.learning.identity_server.dto.response.UserResponse;
-import com.learning.identity_server.exception.ErrorCode;
-import com.learning.identity_server.service.UserService;
-import lombok.extern.slf4j.Slf4j;
+import static org.mockito.ArgumentMatchers.anyString;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -26,11 +24,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.learning.identity_server.dto.request.UserCreateRequest;
+import com.learning.identity_server.dto.request.UserUpdateRequest;
+import com.learning.identity_server.dto.response.UserResponse;
+import com.learning.identity_server.exception.ErrorCode;
+import com.learning.identity_server.service.UserService;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootTest
@@ -79,9 +81,8 @@ public class UserControllerTest {
     @BeforeEach
     public void setup() {
         // Thiết lập SecurityContext với người dùng giả
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken("user", "password",
-                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                "user", "password", Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
@@ -94,9 +95,8 @@ public class UserControllerTest {
 
         Mockito.when(userService.createRequest(ArgumentMatchers.any())).thenReturn(userResponse);
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/users")
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -114,9 +114,8 @@ public class UserControllerTest {
 
         Mockito.when(userService.createRequest(ArgumentMatchers.any())).thenReturn(userResponse);
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/users")
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -134,9 +133,8 @@ public class UserControllerTest {
 
         Mockito.when(userService.createRequest(ArgumentMatchers.any())).thenReturn(userResponse);
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/users")
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -147,48 +145,44 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "admin")
     void getById_success() throws Exception {
-        //GIVEN
+        // GIVEN
         Mockito.when(userService.getByUserId(anyString())).thenReturn(userResponse);
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/users/123qwerty"))
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/123qwerty"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     @WithMockUser(username = "admin")
     void getByUserName_success() throws Exception {
-        //GIVEN
+        // GIVEN
         Mockito.when(userService.getByUserName(anyString())).thenReturn(userResponse);
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/users/getByUserName/huytq"))
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/getByUserName/huytq"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     @WithMockUser(username = "admin")
     void getProfile_success() throws Exception {
-        //GIVEN
+        // GIVEN
         Mockito.when(userService.getProfile()).thenReturn(userResponse);
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/users/profile"))
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/profile"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     @WithMockUser(username = "admin")
     void getUser_success() throws Exception {
-        //GIVEN
+        // GIVEN
         Mockito.when(userService.getAll()).thenReturn(listUserResponse);
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/users"))
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.get("/users"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -200,11 +194,11 @@ public class UserControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
         String content = objectMapper.writeValueAsString(userUpdateRequest);
 
-        Mockito.when(userService.updateRequest(anyString(), ArgumentMatchers.any())).thenReturn(userResponse);
+        Mockito.when(userService.updateRequest(anyString(), ArgumentMatchers.any()))
+                .thenReturn(userResponse);
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put("/users/123qwe")
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.put("/users/123qwe")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -220,9 +214,8 @@ public class UserControllerTest {
 
         Mockito.doNothing().when(userService).deleteUser(anyString());
 
-        //WHEN, THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .delete("/users/123qwe"))
+        // WHEN, THEN
+        mockMvc.perform(MockMvcRequestBuilders.delete("/users/123qwe"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

@@ -1,17 +1,20 @@
 package com.learning.identity_server.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
 import com.learning.identity_server.dto.request.UserCreateRequest;
 import com.learning.identity_server.dto.request.UserUpdateRequest;
 import com.learning.identity_server.dto.response.ApiResponse;
 import com.learning.identity_server.dto.response.UserResponse;
 import com.learning.identity_server.service.UserService;
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -53,7 +56,8 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    ApiResponse<UserResponse> updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request) {
+    ApiResponse<UserResponse> updateUser(
+            @PathVariable("userId") String userId, @RequestBody UserUpdateRequest request) {
         var response = new ApiResponse<UserResponse>();
         response.setResult(_userService.updateRequest(userId, request));
         return response;

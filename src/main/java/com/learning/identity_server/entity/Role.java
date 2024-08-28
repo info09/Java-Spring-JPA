@@ -1,11 +1,12 @@
 package com.learning.identity_server.entity;
 
+import java.util.Set;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Set;
 
 @Entity
 @Getter
@@ -17,6 +18,7 @@ import java.util.Set;
 public class Role {
     @jakarta.persistence.Id
     String name;
+
     String description;
 
     @ManyToMany

@@ -1,22 +1,24 @@
 package com.learning.identity_server.configuration;
 
-import com.learning.identity_server.constants.PredefineRole;
-import com.learning.identity_server.entity.Role;
-import com.learning.identity_server.entity.User;
-import com.learning.identity_server.repository.IRoleRepository;
-import com.learning.identity_server.repository.IUserRepository;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashSet;
+
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
+import com.learning.identity_server.constants.PredefineRole;
+import com.learning.identity_server.entity.Role;
+import com.learning.identity_server.entity.User;
+import com.learning.identity_server.repository.IRoleRepository;
+import com.learning.identity_server.repository.IUserRepository;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @RequiredArgsConstructor
@@ -25,12 +27,17 @@ import java.util.HashSet;
 public class ApplicationInitConfig {
     @NonFinal
     static final String ADMIN_USER_NAME = "admin";
+
     @NonFinal
     static final String ADMIN_PASSWORD = "admin";
+
     PasswordEncoder passwordEncoder;
 
     @Bean
-    @ConditionalOnProperty(prefix = "spring", value = "datasource.driverClassName", havingValue = "com.mysql.cj.jdbc.Driver")
+    @ConditionalOnProperty(
+            prefix = "spring",
+            value = "datasource.driverClassName",
+            havingValue = "com.mysql.cj.jdbc.Driver")
     ApplicationRunner applicationRunner(IUserRepository _userRepository, IRoleRepository _roleRepository) {
         log.info("Initializing application.....");
         return args -> {
