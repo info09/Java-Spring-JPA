@@ -1,27 +1,28 @@
 package com.learning.identity_server.service;
 
-import java.util.HashSet;
-import java.util.List;
-
+import com.learning.identity_server.constants.PredefineRole;
+import com.learning.identity_server.dto.request.UserCreateRequest;
+import com.learning.identity_server.dto.request.UserUpdateRequest;
+import com.learning.identity_server.dto.response.UserResponse;
+import com.learning.identity_server.entity.Role;
+import com.learning.identity_server.entity.User;
+import com.learning.identity_server.exception.AppException;
+import com.learning.identity_server.exception.ErrorCode;
+import com.learning.identity_server.mapper.IUserMapper;
+import com.learning.identity_server.repository.IRoleRepository;
+import com.learning.identity_server.repository.IUserRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.learning.identity_server.constants.PredefineRole;
-import com.learning.identity_server.dto.request.UserCreateRequest;
-import com.learning.identity_server.dto.request.UserUpdateRequest;
-import com.learning.identity_server.dto.response.UserResponse;
-import com.learning.identity_server.exception.AppException;
-import com.learning.identity_server.exception.ErrorCode;
-import com.learning.identity_server.mapper.IUserMapper;
-import com.learning.identity_server.repository.IRoleRepository;
-import com.learning.identity_server.repository.IUserRepository;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,13 +36,21 @@ public class UserService {
     public UserResponse createRequest(UserCreateRequest request) {
         if (userRepository.existsByUserName(request.getUserName())) throw new AppException(ErrorCode.USER_EXISTED);
 
-        var user = userMapper.toUser(request);
+        User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        HashSet<String> roles = new HashSet<>();
-        roles.add(PredefineRole.USER_ROLE);
+        HashSet<Role> roles = new HashSet<>();
+        roleRepository.findById(PredefineRole.USER_ROLE).ifPresent(roles::add);
 
-        return userMapper.toUserDto(userRepository.save(user));
+        user.setRoles(roles);
+
+        try {
+            user = userRepository.save(user);
+        } catch (DataIntegrityViolationException ex) {
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+
+        return userMapper.toUserDto(user);
     }
 
     public UserResponse updateRequest(String userId, UserUpdateRequest request) {
