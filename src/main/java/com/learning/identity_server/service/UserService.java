@@ -1,5 +1,15 @@
 package com.learning.identity_server.service;
 
+import java.util.HashSet;
+import java.util.List;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.learning.identity_server.constants.PredefineRole;
 import com.learning.identity_server.dto.request.UserCreateRequest;
 import com.learning.identity_server.dto.request.UserUpdateRequest;
@@ -11,18 +21,10 @@ import com.learning.identity_server.exception.ErrorCode;
 import com.learning.identity_server.mapper.IUserMapper;
 import com.learning.identity_server.repository.IRoleRepository;
 import com.learning.identity_server.repository.IUserRepository;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

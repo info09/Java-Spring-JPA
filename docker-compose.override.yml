@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  mysqldb:
+    container_name: mysqldb
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: "Admin@123$"
+      MYSQL_TCP_PORT: 3306
+      MYSQL_DATABASE: identity_service
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  identity.api:
+    container_name: identity.api
+    environment:
+      - DBMS_CONNECTION=jdbc:mysql://mysqldb:3306/identity_service
+    depends_on:
+      - mysqldb
+    ports:
+      - "8080:8080"
+    restart: always

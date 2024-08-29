@@ -1,11 +1,12 @@
 package com.learning.identity_server.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.util.Set;
+
+import jakarta.persistence.*;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Entity
 @Getter
@@ -21,6 +22,7 @@ public class User {
 
     @Column(name = "userName", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     String userName;
+
     String password;
     String firstName;
     String lastName;

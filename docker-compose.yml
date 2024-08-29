@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  #database section
+  mysqldb:
+    image: mysql:8.0.36-debian
+
+  identity.api:
+    image: ${DOCKER_REGISTRY-}identity-service:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+#network section
+networks:
+  default:
+    name: identity-service-network
+    driver: bridge
+
+#volumes sections
+volumes:
+  mysql_data:
+    name: mysql_data
