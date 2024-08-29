@@ -1,13 +1,11 @@
 package com.learning.identity_server.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.learning.identity_server.dto.request.UserCreateRequest;
-import com.learning.identity_server.dto.request.UserUpdateRequest;
-import com.learning.identity_server.dto.response.UserResponse;
-import com.learning.identity_server.exception.ErrorCode;
-import com.learning.identity_server.service.UserService;
-import lombok.extern.slf4j.Slf4j;
+import static org.mockito.ArgumentMatchers.anyString;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -26,11 +24,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.learning.identity_server.dto.request.UserCreateRequest;
+import com.learning.identity_server.dto.request.UserUpdateRequest;
+import com.learning.identity_server.dto.response.UserResponse;
+import com.learning.identity_server.exception.ErrorCode;
+import com.learning.identity_server.service.UserService;
 
-import static org.mockito.ArgumentMatchers.anyString;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootTest

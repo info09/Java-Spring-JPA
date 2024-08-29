@@ -1,15 +1,5 @@
 package com.learning.identity_server.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.learning.identity_server.dto.request.AuthRequest;
-import com.learning.identity_server.dto.request.IntrospectRequest;
-import com.learning.identity_server.dto.request.LogoutRequest;
-import com.learning.identity_server.dto.request.RefreshTokenRequest;
-import com.learning.identity_server.dto.response.AuthResponse;
-import com.learning.identity_server.dto.response.IntrospectResponse;
-import com.learning.identity_server.service.AuthService;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -23,6 +13,18 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.learning.identity_server.dto.request.AuthRequest;
+import com.learning.identity_server.dto.request.IntrospectRequest;
+import com.learning.identity_server.dto.request.LogoutRequest;
+import com.learning.identity_server.dto.request.RefreshTokenRequest;
+import com.learning.identity_server.dto.response.AuthResponse;
+import com.learning.identity_server.dto.response.IntrospectResponse;
+import com.learning.identity_server.service.AuthService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootTest
