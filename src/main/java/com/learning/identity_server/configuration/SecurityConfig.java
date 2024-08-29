@@ -12,13 +12,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
-        "/users", "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh"
+            "/users", "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh"
     };
 
     private final CustomJwtDecoder customJwtDecoder;
@@ -44,6 +47,19 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 
         return httpSecurity.build();
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        var corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedOrigin("*");
+
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+
+        return new CorsFilter(urlBasedCorsConfigurationSource);
     }
 
     @Bean
