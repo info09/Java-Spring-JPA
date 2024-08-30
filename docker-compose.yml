@@ -5,11 +5,13 @@ services:
   mysqldb:
     image: mysql:8.0.36-debian
 
+  #  identity.api:
+  #    image: ${DOCKER_REGISTRY-}identity-service:${PLATFORM:-linux}-${TAG:-latest}
+  #    build:
+  #      context: .
+  #      dockerfile: Dockerfile
   identity.api:
-    image: ${DOCKER_REGISTRY-}identity-service:${PLATFORM:-linux}-${TAG:-latest}
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: huytq3103/identity-service:0.9.0
 
 #network section
 networks:
