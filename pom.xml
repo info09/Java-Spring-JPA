@@ -143,10 +143,10 @@
                 </executions>
                 <configuration>
                     <excludes>
-                        <exclude>com/learning/identity_server/dto/**</exclude>
-                        <exclude>com/learning/identity_server/entity/**</exclude>
-                        <exclude>com/learning/identity_server/mapper/**</exclude>
-                        <exclude>com/learning/identity_server/configuration/**</exclude>
+                        <exclude>com/learning/identity/dto/**</exclude>
+                        <exclude>com/learning/identity/entity/**</exclude>
+                        <exclude>com/learning/identity/mapper/**</exclude>
+                        <exclude>com/learning/identity/configuration/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>
